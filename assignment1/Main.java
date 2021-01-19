@@ -1,3 +1,5 @@
+package assignment1;
+
 class Main{
     public static void main(String[] args){
         Mouse mouse = new Mouse("Charles E. Cheese", 4, 2);
