@@ -3,10 +3,12 @@ package assignment2;
 import java.util.*;
 
 public class MyStack {
-    ArrayList<Integer> myStack;
+    ArrayList<Integer> myStack = new ArrayList<Integer>();
 
     public MyStack(ArrayList<Integer> myStack){
         this.myStack = myStack;
+    }
+    public MyStack(){
     }
     //add to the end of a stack o(1)
     public void push(Integer k){

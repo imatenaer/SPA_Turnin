@@ -9,6 +9,13 @@ public class MyLinkedList {
 
     public void printList(){
         Node currentNode = this.headNode;
-        System.out.print(headNode.data);
+        while(currentNode != null){
+            System.out.print(headNode.data);
+            currentNode = currentNode.next;
+        }
+    }
+
+    public void append(int k){
+        
     }
 }
