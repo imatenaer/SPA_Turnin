@@ -1,6 +1,6 @@
 package assignment3;
 import java.util.*;
-
+//90% of code from google classroom
 public class Grid {
 	
 	ArrayList<ArrayList<Integer>> grid;
@@ -36,8 +36,6 @@ public class Grid {
 			
 			g.add(zeros);
 			
-			
-			
 		}
 		return g;
 		
@@ -53,5 +51,18 @@ public class Grid {
         }
 
         return gridString;
-    }
+	}
+	public void changeSpot(int x, int y, Mouse m){
+		m.setX(x);
+		m.setY(y);
+	}
+	public int getXSize(){
+		return xDimension;
+	}
+	public int getYSize(){
+		return yDimension;
+	}
+	public ArrayList<ArrayList<Integer>> getGrid(){
+		return grid;
+	}
 }

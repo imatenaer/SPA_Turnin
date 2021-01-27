@@ -2,213 +2,231 @@ package assignment3;
 
 import java.util.*;
 
-class Mouse{
-    public String name;
-    public int xCoordinate;
-    public int yCoordinate;
-    public Grid grid = new Grid(3, 3, 1);
-    public Deque<ArrayList<Integer>> coordinateHistoryStack = new ArrayDeque<ArrayList<Integer>>();
-    public Mouse(){
-        name = "Chuck";
-        xCoordinate = 0;
-        yCoordinate = 0;
-        ArrayList<Integer> a1 = new ArrayList<Integer>();
-        a1.add(xCoordinate);
-        a1.add(yCoordinate);
-        coordinateHistoryStack.push(a1);
-    }
-    public Mouse(String n, int x, int y){
-        name = n;
-        xCoordinate = x;
-        yCoordinate = y;
-        ArrayList<Integer> a2 = new ArrayList<Integer>();
-        a2.add(xCoordinate);
-        a2.add(yCoordinate);
-        coordinateHistoryStack.push(a2);
-    }
-    public String getMouseName(){
-        return name;
-    }
-    public int getXCoordinate(){
-        return xCoordinate;
-    }
-    public int getYCoordinate(){
-        return yCoordinate;
-    }
-    public void printInformation(){
-        System.out.println("Name: " + name + "\nCurrent Location: (" + xCoordinate + ", " + yCoordinate + ")\n History: " + coordinateHistoryStack.toString());
+
+public class Mouse {
+    private String name;
+    private int xCoordinate;
+    private int yCoordinate;
+    private ArrayList<ArrayList<Integer>> coordinateHistoryStack;
+    private MyStack stack;
+
+    public Mouse(String iName, int iXCoord, int iYCoord){
+        coordinateHistoryStack = new ArrayList<ArrayList<Integer>>();
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        stack = new MyStack();
+        name = iName;
+        xCoordinate = iXCoord;
+        yCoordinate = iYCoord;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
     }
 
-    public void moveUp(){
-        grid.grid.get(yCoordinate).set(xCoordinate, 2);
-        yCoordinate--;
-        ArrayList<Integer> a3 = new ArrayList<Integer>();
-        a3.add(xCoordinate);
-        a3.add(yCoordinate);
-        coordinateHistoryStack.push(a3);
+    public String toString(){
+        String info = name + ": (" + xCoordinate + ", " + yCoordinate + "), history: " + coordinateHistoryStack + "\n";
+
+        return info;
     }
-    public void moveDown(){
-        yCoordinate++;
-        ArrayList<Integer> a4 = new ArrayList<Integer>();
-        a4.add(xCoordinate);
-        a4.add(yCoordinate);
-        coordinateHistoryStack.push(a4);
+
+    public void update(Grid grid){
+        grid.getGrid().get(xCoordinate).set(yCoordinate, 2);
+        scan(grid);
+        while(stack.arrayStack.size() > 0){
+            changeCell(grid);
+            scan(grid);
+            updatePOS(grid);
+            System.out.println(grid);
+            wait(700);
+            clearScreen();
+        }
+        System.out.println(grid + "\nComplete! " + toString());
     }
-    public void moveRight(){
-        grid.grid.get(yCoordinate).set(xCoordinate, 2);
-        xCoordinate++;
-        grid.grid.get(yCoordinate).set(xCoordinate, 3);
-        ArrayList<Integer> a5 = new ArrayList<Integer>();
-        a5.add(xCoordinate);
-        a5.add(yCoordinate);
-        coordinateHistoryStack.push(a5);
+    public void changeCell(Grid grid){
+        grid.getGrid().get(xCoordinate).set(yCoordinate, 2);
     }
-    public void moveLeft(){
-        xCoordinate--;
-        ArrayList<Integer> a6 = new ArrayList<Integer>();
-        a6.add(xCoordinate);
-        a6.add(yCoordinate);
-        coordinateHistoryStack.push(a6);
+    public void updatePOS(Grid grid){
+        grid.getGrid().get(xCoordinate).set(yCoordinate, 3);
     }
-    public void moveUpRight(){ //all of these need more stuff (otherwise the stack will break)
-        xCoordinate++;
-        yCoordinate--;
-        ArrayList<Integer> a7 = new ArrayList<Integer>();
-        a7.add(xCoordinate);
-        a7.add(yCoordinate);
-        coordinateHistoryStack.push(a7);
-    }
-    public void moveDownRight(){
-        xCoordinate++;
-        yCoordinate++;
-        ArrayList<Integer> a8 = new ArrayList<Integer>();
-        a8.add(xCoordinate);
-        a8.add(yCoordinate);
-        coordinateHistoryStack.push(a8);
-    }
-    public void moveUpLeft(){
-        xCoordinate--;
-        yCoordinate--;
-        ArrayList<Integer> a9 = new ArrayList<Integer>();
-        a9.add(xCoordinate);
-        a9.add(yCoordinate);
-        coordinateHistoryStack.push(a9);
-    }
-    public void moveDownLeft(){
-        xCoordinate--;
-        yCoordinate++;
-        ArrayList<Integer> a0 = new ArrayList<Integer>();
-        a0.add(xCoordinate);
-        a0.add(yCoordinate);
-        coordinateHistoryStack.push(a0);
-    }
-    public void scan(){
-        if(yCoordinate == 0 && xCoordinate == 0){
-            if(this.grid.grid.get(yCoordinate).get(xCoordinate + 1) == 0){
-                moveRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate + 1) == 0){
-                moveDownRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate) == 0){
-                moveDown();
-            } else {
-                moveBack();
-            }
-        } else if (yCoordinate == 0){
-            if(this.grid.grid.get(yCoordinate).get(xCoordinate + 1) == 0){
-                moveRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate + 1) == 0){
-                moveDownRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate) == 0){
-                moveDown();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate - 1) == 0){
-                moveDownLeft();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate - 1) == 0){
-                moveLeft();
-            } else {
-                moveBack();
-            }
-        } else if(xCoordinate == 0){ // cant move downLeft left or upLeft
-            //completed: right, downright, down
-            //add: up, upright, 
-            if(this.grid.grid.get(yCoordinate - 1).get(xCoordinate + 1) == 0){
-                moveUpRight();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate + 1) == 0){
-                moveRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate + 1) == 0){
-                moveDownRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate) == 0){ //remove this, change to up
-                moveDown();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate) == 0){ 
+    public boolean scan(Grid grid){
+        if(yCoordinate - 1 >= 0){
+            if(grid.getGrid().get(xCoordinate).get(yCoordinate - 1) == 0){
+                stack.push(currentPos());
                 moveUp();
-            } else {
-                moveBack();
+                return true;
             }
-        } else if (yCoordinate == grid.yDimension && xCoordinate == grid.xDimension){ //cant move down or right
-            if(this.grid.grid.get(yCoordinate).get(xCoordinate - 1) == 0){
-                moveLeft();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate - 1) == 0){
-                moveUpLeft();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate) == 0){
-                moveUp();
-            } else {
-                moveBack();
+            else if(xCoordinate + 1 < grid.getXSize()){
+                if(grid.getGrid().get(xCoordinate + 1).get(yCoordinate - 1) == 0){
+                    stack.push(currentPos());
+                    moveNE();
+                    return true;
+                }
             }
-        } else if (yCoordinate == grid.yDimension){ //cannot move down
-            if(this.grid.grid.get(yCoordinate - 1).get(xCoordinate + 1)== 0){
-                moveUpRight();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate + 1) == 0){
+        }
+        if(xCoordinate + 1 < grid.getXSize()){
+            if(grid.getGrid().get(xCoordinate + 1).get(yCoordinate) == 0){
+                stack.push(currentPos());
                 moveRight();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate - 1) == 0){
-                moveLeft();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate - 1) == 0){
-                moveUpLeft();
-            } else {
-                moveBack();
+                return true;
             }
-        } else if(xCoordinate == grid.xDimension){ //cant move right
-            if(this.grid.grid.get(yCoordinate + 1).get(xCoordinate) == 0){
+            else if(yCoordinate + 1 < grid.getYSize()){
+                if(grid.getGrid().get(xCoordinate + 1).get(yCoordinate + 1) == 0){
+                    stack.push(currentPos());
+                    moveSE();
+                    return true;
+                }
+            }
+        }
+        if(yCoordinate + 1 < grid.getYSize()){
+            if(grid.getGrid().get(xCoordinate).get(yCoordinate + 1) == 0){
+                stack.push(currentPos());
                 moveDown();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate - 1) == 0){
-                moveDownLeft();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate - 1) == 0){
-                moveLeft();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate - 1) == 0){
-                moveUpLeft();
-            } else if (this.grid.grid.get(yCoordinate - 1).get(xCoordinate) == 0){
-                moveUp();
-            } else {
-                moveBack();
+                return true;
             }
-        } else {
-            if(this.grid.grid.get(yCoordinate - 1).get(xCoordinate + 1) == 0){
-                moveUpRight();
-            } else if (this.grid.grid.get(yCoordinate).get(xCoordinate + 1) == 0){
+            else if (xCoordinate - 1 >= 0){
+                if(grid.getGrid().get(xCoordinate - 1).get(yCoordinate + 1) == 0){
+                    stack.push(currentPos());
+                    moveSW();
+                    return true;
+                }
+            }
+        }
+        if(xCoordinate - 1 >= 0){
+            if(grid.getGrid().get(xCoordinate - 1).get(yCoordinate) == 0){
+                stack.push(currentPos());
+                moveLeft();
+                return true;
+            }
+            else if (yCoordinate - 1 >= 0){
+                if(grid.getGrid().get(xCoordinate - 1).get(yCoordinate - 1) == 0){
+                    stack.push(currentPos());
+                    moveNW();
+                    return true;
+                }
+            }
+        }
+        moveBack();
+        return false;
+    }
+    public void moveBack(){
+        ArrayList<Integer> lastPos = stack.pop();
+        if(xCoordinate > lastPos.get(0)){
+            if(yCoordinate < lastPos.get(1)){
+                moveSW();
+            }
+            else if (yCoordinate == lastPos.get(1)){
+                moveLeft();
+            }
+            else{
+                moveNW();
+            }
+        }
+        else if(xCoordinate < lastPos.get(0)){
+            if(yCoordinate < lastPos.get(1)){
+                moveSE();
+            }
+            else if (yCoordinate == lastPos.get(1)){
                 moveRight();
-            } else if (this.grid.grid.get(yCoordinate + 1).get(xCoordinate + 1) == 0){
-                moveDownRight();
-            } else if(this.grid.grid.get(yCoordinate + 1).get(xCoordinate) == 0){
+            }
+            else{
+                moveNE();
+            }
+        }
+        else{
+            if(yCoordinate < lastPos.get(1)){
                 moveDown();
-            } else if(this.grid.grid.get(yCoordinate + 1).get(xCoordinate - 1) == 0){
-                moveDownLeft();
-            } else if(this.grid.grid.get(yCoordinate).get(xCoordinate - 1) == 0){
-                moveLeft();
-            } else if(this.grid.grid.get(yCoordinate - 1).get(xCoordinate - 1) == 0){
-                moveUpLeft();
-            } else if(this.grid.grid.get(yCoordinate - 1).get(xCoordinate) == 0){
+            }
+            else if (yCoordinate > lastPos.get(1)){
                 moveUp();
-            } else {
-                moveBack();
             }
         }
     }
-    public void moveBack(){
-        ArrayList<Integer> temp = new ArrayList<Integer>();
-        temp = coordinateHistoryStack.pop();
+    public void moveUp(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        yCoordinate--;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
     }
-    public ArrayList<Integer> getLocation(){
-        ArrayList<Integer> l = new ArrayList<Integer>();
-        l.set(0, xCoordinate);
-        l.set(1, yCoordinate);
-        return l;
+
+    public void moveDown(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        yCoordinate++;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
     }
+    public void moveRight(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate++;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+    public void moveLeft(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate--;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+    public void moveNE(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate++;
+        yCoordinate--;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+    public void moveSE(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate++;
+        yCoordinate++;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+    public void moveSW(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate--;
+        yCoordinate++;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+    public void moveNW(){
+        ArrayList<Integer> coords = new ArrayList<Integer>();
+        xCoordinate--;
+        yCoordinate--;
+        coords.add(xCoordinate);
+        coords.add(yCoordinate);
+        coordinateHistoryStack.add(coords);
+    }
+
+    public void setX(int x){
+        xCoordinate = x;
+    }
+
+    public void setY(int y){
+        yCoordinate = y;
+    }
+
+    public ArrayList<Integer> currentPos(){
+        ArrayList<Integer> pos = new ArrayList<Integer>();
+        pos.add(xCoordinate);
+        pos.add(yCoordinate);
+
+        return pos;
+    }
+    public static void clearScreen() {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();  
+    }  
+    public static void wait(int ms){
+        try{
+            Thread.sleep(ms);
+        }
+        catch(InterruptedException ex){
+            Thread.currentThread().interrupt();
+        }
+}
 }
