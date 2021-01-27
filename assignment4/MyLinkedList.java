@@ -10,12 +10,15 @@ public class MyLinkedList {
     public void printList(){
         Node currentNode = this.headNode;
         while(currentNode != null){
-            System.out.print(headNode.data);
+            System.out.println(currentNode.data);
             currentNode = currentNode.next;
         }
     }
+    public void add(int k){
+        Node newNode = new Node(k);
 
-    public void append(int k){
-        
+        newNode.next = this.headNode;
+
+        this.headNode = newNode;
     }
 }
